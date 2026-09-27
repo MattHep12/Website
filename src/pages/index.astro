@@ -1,0 +1,11 @@
+---
+import Home from '@theme/Home.astro';
+import { getPosts, getProjects } from '../lib/content';
+
+const all = await getProjects();
+const featured = all.filter((p) => p.data.featured);
+const projects = (featured.length ? featured : all).slice(0, 4);
+const posts = (await getPosts()).slice(0, 5);
+---
+
+<Home projects={projects} posts={posts} totalProjects={all.length} />

@@ -1,0 +1,21 @@
+---
+import Layout from './Layout.astro';
+import PostRows from './PostRows.astro';
+import type { Post } from '../../lib/content';
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+<Layout title="Misc" description="Notes, write-ups and miscellaneous posts by Matt Hepburn.">
+  <div class="wrap">
+    <header class="page-head">
+      <h1>Misc<sup>({String(posts.length).padStart(2, '0')})</sup></h1>
+      <p class="lede">Notes, half-formed ideas and things I wanted to write down.</p>
+    </header>
+    {posts.length > 0 ? <PostRows posts={posts} headingLevel={2} /> : <p>Nothing here yet.</p>}
+  </div>
+</Layout>

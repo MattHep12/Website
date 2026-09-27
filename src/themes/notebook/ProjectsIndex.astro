@@ -1,0 +1,27 @@
+---
+import Layout from './Layout.astro';
+import ProjectItem from './ProjectItem.astro';
+import type { Project } from '../../lib/content';
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<Layout title="Projects" description="Things Matt Hepburn has built: tools, experiments and side projects.">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="label">Index</p>
+      <h1>Projects</h1>
+      <p class="lede measure">
+        Tools, experiments and side projects, newest first. Some are finished; most are still
+        evolving.
+      </p>
+    </header>
+    {projects.map((project) => <ProjectItem project={project} headingLevel={2} />)}
+    {projects.length === 0 && <p>Nothing here yet.</p>}
+  </div>
+</Layout>
+

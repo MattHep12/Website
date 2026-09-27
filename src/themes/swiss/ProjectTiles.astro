@@ -1,0 +1,25 @@
+---
+import ProjectTile from './ProjectTile.astro';
+import type { Project } from '../../lib/content';
+
+interface Props {
+  projects: Project[];
+  headingLevel?: 2 | 3;
+}
+
+const { projects, headingLevel } = Astro.props;
+---
+
+<div class="tiles grid">
+  {
+    projects.map((project, index) => (
+      <ProjectTile project={project} index={index} headingLevel={headingLevel} />
+    ))
+  }
+</div>
+
+<style>
+  .tiles {
+    row-gap: clamp(3rem, 6vw, 5rem);
+  }
+</style>

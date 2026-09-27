@@ -1,0 +1,29 @@
+---
+import Layout from './Layout.astro';
+import ProjectItem from './ProjectItem.astro';
+import type { Project } from '../../lib/content';
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<Layout title="Demos" description="Small interactive things you can play with in the browser.">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="label">Index</p>
+      <h1>Demos</h1>
+      <p class="lede measure">Small interactive things that run right in your browser.</p>
+    </header>
+    {projects.map((project) => <ProjectItem project={project} headingLevel={2} />)}
+    {projects.length === 0 && <p class="empty">No demos yet. Check back soon.</p>}
+  </div>
+</Layout>
+
+<style>
+  .empty {
+    color: var(--muted);
+  }
+</style>

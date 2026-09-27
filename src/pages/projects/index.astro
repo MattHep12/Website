@@ -1,0 +1,8 @@
+---
+import ProjectsIndex from '@theme/ProjectsIndex.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = await getProjects();
+---
+
+<ProjectsIndex projects={projects} />
