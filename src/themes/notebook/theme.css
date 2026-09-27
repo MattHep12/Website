@@ -133,6 +133,52 @@ a:hover {
   color: var(--faint);
 }
 
+/* Design switch in the header (src/components/ThemeSwitch.astro) */
+.theme-switch {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding-left: 1.25rem;
+  border-left: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: var(--muted);
+}
+
+.theme-switch-label::after {
+  content: ':';
+}
+
+.theme-switch-option {
+  padding-block: 0.4rem;
+}
+
+.theme-switch-option[aria-current] {
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 0.45em;
+}
+
+a.theme-switch-option {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+a.theme-switch-option:hover {
+  color: var(--accent);
+}
+
+/* On phones the switch wraps onto its own line, where the divider isn't needed. */
+@media (max-width: 40rem) {
+  .theme-switch {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
 /* Index pages (projects, misc, demos) */
 .page-head {
   padding-block: 2rem 1rem;

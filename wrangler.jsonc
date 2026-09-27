@@ -1,12 +1,17 @@
 {
-  // Cloudflare Workers config. The site is fully static: Workers serves the
-  // files in ./dist directly (no Worker script, so requests are free).
+  // Cloudflare Workers config. The site is static: Cloudflare serves the files
+  // in ./dist directly. A small Worker (worker/index.ts) runs first for pages
+  // only, to serve the theme each visitor picked with the switch in the header.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "matthepburn",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-09-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "html_handling": "auto-trailing-slash"
+    "html_handling": "auto-trailing-slash",
+    // Hashed CSS, fonts and images never need the Worker.
+    "run_worker_first": ["/*", "!/_astro/*"]
   }
 }
