@@ -1,0 +1,268 @@
+/* Theme A: "Lab Notebook". Warm paper, serif type, monospace margin notes. */
+@import '@fontsource-variable/newsreader/wght.css';
+@import '@fontsource-variable/newsreader/wght-italic.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+
+:root {
+  --font-body: 'Newsreader Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --bg: #f7f3ec;
+  --surface: #fffcf6;
+  --fg: #1f1c19;
+  --muted: #5f5850;
+  --faint: #8c8378;
+  --border: #ddd4c6;
+  --accent: #a3421b;
+  --accent-soft: #f0dccd;
+  --radius: 4px;
+
+  --measure: 40rem;
+  --wide: 56rem;
+  --gutter: clamp(1.25rem, 5vw, 2.5rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #191715;
+    --surface: #211e1b;
+    --fg: #ece5da;
+    --muted: #b0a699;
+    --faint: #8a8176;
+    --border: #3a342e;
+    --accent: #e8905f;
+    --accent-soft: #3b2619;
+  }
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 1.1875rem;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+/* ---------- layout helpers ---------- */
+
+.wrap {
+  width: 100%;
+  max-width: calc(var(--wide) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.measure {
+  max-width: var(--measure);
+}
+
+/* Small monospace labels, like notes in a margin. */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 0 0 1.75rem;
+}
+
+.section-head::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--border);
+  transform: translateY(-0.25em);
+}
+
+.section-head h2 {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.more-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.more-link:hover {
+  text-decoration: underline;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.tags li::before {
+  content: '#';
+  color: var(--faint);
+}
+
+/* Index pages (projects, misc, demos) */
+.page-head {
+  padding-block: 2rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-head .label {
+  margin: 0;
+}
+
+.page-head h1 {
+  margin: 0.25rem 0 0.75rem;
+  font-size: clamp(2.5rem, 7vw, 3.75rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.page-head .lede {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 1.25rem;
+}
+
+/* ---------- long-form text ---------- */
+
+.prose {
+  max-width: var(--measure);
+}
+
+.prose > * + * {
+  margin-top: 1.1em;
+}
+
+.prose :is(h2, h3, h4) {
+  margin: 2em 0 0.4em;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.prose h2 {
+  font-size: 1.6rem;
+}
+
+.prose h3 {
+  font-size: 1.3rem;
+}
+
+.prose p,
+.prose ul,
+.prose ol {
+  margin-bottom: 0;
+}
+
+.prose li + li {
+  margin-top: 0.35em;
+}
+
+.prose li::marker {
+  color: var(--accent);
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--accent);
+  font-style: italic;
+  color: var(--muted);
+}
+
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  background: var(--accent-soft);
+}
+
+.prose pre {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.prose pre code {
+  font-family: var(--font-mono);
+}
+
+.prose img {
+  display: block;
+  border-radius: var(--radius);
+}
+
+/* Screenshots may run wider than the text column, up to the page width. */
+.prose p > img {
+  width: 140%;
+  max-width: calc(100vw - 2 * var(--gutter));
+}
+
+/* Demos embedded in Markdown with a raw <iframe>. */
+.prose iframe {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.prose hr {
+  border: 0;
+  text-align: center;
+  margin-block: 2.5em;
+}
+
+.prose hr::before {
+  content: '⁂';
+  color: var(--faint);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.prose :is(th, td) {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}

@@ -1,0 +1,332 @@
+/* Theme C: "Swiss Grid". Big grotesk type, a strict 12-column grid, one strong accent. */
+@import '@fontsource-variable/inter/wght.css';
+@import '@fontsource-variable/inter-tight/wght.css';
+
+:root {
+  --font-body: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-display: 'Inter Tight Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --bg: #fbfbfa;
+  --surface: #efefed;
+  --fg: #0e0e0e;
+  --muted: #5a5a58;
+  --border: #dcdcd9;
+  --accent: #2140f0;
+  --accent-fg: #ffffff;
+  --radius: 0;
+
+  --max: 84rem;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --gap: clamp(1rem, 2vw, 1.75rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c0c0d;
+    --surface: #18181a;
+    --fg: #f2f2f0;
+    --muted: #a3a3a0;
+    --border: #2c2c2e;
+    --accent: #8295ff;
+    --accent-fg: #0c0c0d;
+  }
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+/* The accent bar across the top of every page. */
+body::before {
+  content: '';
+  display: block;
+  height: 6px;
+  background: var(--accent);
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+/* ---------- grid ---------- */
+
+.wrap {
+  width: 100%;
+  max-width: calc(var(--max) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gap);
+}
+
+.grid > * {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 56rem) {
+  .col-label {
+    grid-column: 1 / span 3;
+  }
+
+  .col-main {
+    grid-column: 4 / -1;
+  }
+
+  .col-text {
+    grid-column: 4 / span 7;
+  }
+}
+
+/* Small uppercase labels. */
+.eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section {
+  margin-top: clamp(4rem, 10vw, 8rem);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.9rem;
+  margin-bottom: 2rem;
+  border-top: 2px solid var(--fg);
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 0.75rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.count {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tags li {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.arrow-link:hover {
+  text-decoration: underline;
+}
+
+/* Index pages (projects, misc, demos) */
+.page-head {
+  padding-block: clamp(2.5rem, 8vw, 6rem) 2.5rem;
+}
+
+.page-head h1 {
+  margin: 0;
+  font-size: clamp(3.5rem, 13vw, 10rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+}
+
+.page-head h1 sup {
+  font-size: 0.22em;
+  font-weight: 600;
+  letter-spacing: 0;
+  vertical-align: top;
+  margin-left: 0.3em;
+  color: var(--accent);
+}
+
+.page-head .lede {
+  margin: 1.5rem 0 0;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.45;
+  max-width: 36rem;
+  color: var(--muted);
+}
+
+/* ---------- long-form text ---------- */
+
+.prose {
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+.prose > * {
+  max-width: 44rem;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose > * + * {
+  margin-top: 1.15em;
+}
+
+.prose :is(p, ul, ol) {
+  margin-bottom: 0;
+}
+
+.prose :is(h2, h3, h4) {
+  margin: 2.2em 0 0.5em;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.prose h2 {
+  font-size: 1.75rem;
+}
+
+.prose h3 {
+  font-size: 1.3rem;
+}
+
+.prose a {
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+
+.prose ul {
+  padding-left: 1.2em;
+}
+
+.prose li + li {
+  margin-top: 0.4em;
+}
+
+.prose li::marker {
+  color: var(--accent);
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding: 0.25rem 0 0.25rem 1.5rem;
+  border-left: 4px solid var(--accent);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.prose blockquote p {
+  margin: 0;
+}
+
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+  background: var(--surface);
+}
+
+.prose pre {
+  padding: 1.1rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.prose pre code {
+  font-family: var(--font-mono);
+}
+
+.prose img,
+.prose iframe {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+/* Screenshots may run wider than the text, across the whole main column. */
+.prose > p:has(> img) {
+  max-width: none;
+}
+
+.prose p > img {
+  border: 0;
+  background: none;
+}
+
+.prose hr {
+  border: 0;
+  border-top: 2px solid var(--fg);
+  margin-block: 3em;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.prose :is(th, td) {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.prose th {
+  border-bottom: 2px solid var(--fg);
+}

@@ -1,0 +1,121 @@
+---
+import { formatDate, type Post } from '../../lib/content';
+
+interface Props {
+  posts: Post[];
+  headingLevel?: 2 | 3;
+}
+
+const { posts, headingLevel = 3 } = Astro.props;
+const H = `h${headingLevel}` as 'h2' | 'h3';
+---
+
+<ul class="rows">
+  {
+    posts.map((post) => (
+      <li class="row">
+        <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+        <div>
+          <H class="title">
+            <a href={`/misc/${post.id}/`}>{post.data.title}</a>
+          </H>
+          <p class="desc">{post.data.description}</p>
+        </div>
+        <span class="arrow" aria-hidden="true">
+          →
+        </span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.35rem var(--gap);
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--border);
+    transition: background-color 0.15s;
+  }
+
+  @media (min-width: 56rem) {
+    .row {
+      grid-template-columns: 3fr 8fr 1fr;
+    }
+  }
+
+  .row:hover {
+    background: var(--surface);
+  }
+
+  time {
+    padding-top: 0.3rem;
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .title a {
+    text-decoration: none;
+  }
+
+  .title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .row:has(a:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .title a:focus-visible {
+    outline: none;
+  }
+
+  .row:hover .title a {
+    color: var(--accent);
+  }
+
+  .desc {
+    margin: 0.35rem 0 0;
+    color: var(--muted);
+  }
+
+  .arrow {
+    display: none;
+    justify-self: end;
+    padding-right: 0.5rem;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--accent);
+    transition: transform 0.2s;
+  }
+
+  @media (min-width: 56rem) {
+    .arrow {
+      display: block;
+    }
+  }
+
+  .row:hover .arrow {
+    transform: translateX(4px);
+  }
+</style>

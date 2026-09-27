@@ -1,0 +1,152 @@
+<!doctype html>
+<!--
+  Starter demo: copy this folder to public/demos/<your-demo>/ and replace it.
+  Everything a demo needs (HTML, JS, CSS, .wasm files) lives in its folder and
+  is served as-is at /demos/<your-demo>/.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Starter demo · Matt Hepburn</title>
+    <meta name="description" content="A drifting particle field that follows your pointer." />
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f6f6f4;
+        --fg: #1a1a1a;
+        --dot: 40, 40, 40;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #131314;
+          --fg: #ededeb;
+          --dot: 225, 225, 220;
+        }
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font: 14px/1.4 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      }
+      main {
+        height: 100%;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+      button {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        padding: 6px 12px;
+        font: inherit;
+        color: var(--fg);
+        background: var(--bg);
+        border: 1px solid currentColor;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 2px solid rgb(var(--dot));
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1 class="sr-only">Starter demo: a drifting particle field</h1>
+      <canvas aria-label="Particles drifting across the screen, drawn toward the pointer" role="img"></canvas>
+      <button type="button" aria-pressed="false">Pause</button>
+    </main>
+    <script type="module">
+      const canvas = document.querySelector('canvas');
+      const button = document.querySelector('button');
+      const ctx = canvas.getContext('2d');
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let width = 0;
+      let height = 0;
+      let particles = [];
+      let pointer = null;
+      let running = !reduceMotion;
+
+      function resize() {
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        width = canvas.clientWidth;
+        height = canvas.clientHeight;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const count = Math.round((width * height) / 2500);
+        particles = Array.from({ length: count }, () => ({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.6,
+          vy: (Math.random() - 0.5) * 0.6,
+          r: 1 + Math.random() * 1.8,
+        }));
+      }
+
+      function step() {
+        const color = getComputedStyle(document.documentElement).getPropertyValue('--dot');
+        ctx.clearRect(0, 0, width, height);
+        for (const p of particles) {
+          if (pointer) {
+            const dx = pointer.x - p.x;
+            const dy = pointer.y - p.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            const pull = Math.min(40 / dist, 0.25);
+            p.vx += (dx / dist) * pull * 0.2;
+            p.vy += (dy / dist) * pull * 0.2;
+          }
+          p.vx *= 0.985;
+          p.vy *= 0.985;
+          p.x = (p.x + p.vx + width) % width;
+          p.y = (p.y + p.vy + height) % height;
+          const speed = Math.min(Math.hypot(p.vx, p.vy), 2);
+          ctx.fillStyle = `rgba(${color}, ${0.35 + speed * 0.3})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function loop() {
+        if (running) step();
+        requestAnimationFrame(loop);
+      }
+
+      function setRunning(value) {
+        running = value;
+        button.textContent = running ? 'Pause' : 'Play';
+        button.setAttribute('aria-pressed', String(!running));
+      }
+
+      canvas.addEventListener('pointermove', (e) => (pointer = { x: e.offsetX, y: e.offsetY }));
+      canvas.addEventListener('pointerleave', () => (pointer = null));
+      button.addEventListener('click', () => setRunning(!running));
+      addEventListener('resize', resize);
+
+      resize();
+      setRunning(running);
+      step();
+      loop();
+    </script>
+  </body>
+</html>

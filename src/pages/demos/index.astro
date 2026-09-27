@@ -1,0 +1,10 @@
+---
+// Lists every project whose `demo` is a local /demos/... path.
+// The demos themselves are plain static files in public/demos/<name>/.
+import DemosIndex from '@theme/DemosIndex.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = (await getProjects()).filter((p) => p.data.demo?.startsWith('/demos/'));
+---
+
+<DemosIndex projects={projects} />

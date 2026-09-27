@@ -1,0 +1,137 @@
+---
+import Layout from './Layout.astro';
+import ProjectTiles from './ProjectTiles.astro';
+import PostRows from './PostRows.astro';
+import { INTRO, LINKS, SITE } from '../../site';
+import type { Post, Project } from '../../lib/content';
+
+interface Props {
+  projects: Project[];
+  posts: Post[];
+  totalProjects: number;
+}
+
+const { projects, posts, totalProjects } = Astro.props;
+const [first, ...rest] = SITE.name.split(' ');
+---
+
+<Layout>
+  <section class="hero wrap" aria-labelledby="hero-heading">
+    <h1 id="hero-heading">
+      <span>{first}</span>
+      <span>{rest.join(' ')}<span class="dot">.</span></span>
+    </h1>
+    <div class="grid about">
+      <p class="eyebrow col-label">About</p>
+      <div class="col-text">
+        <p class="greeting">{INTRO.greeting}</p>
+        {INTRO.paragraphs.map((p) => <p class="lede">{p}</p>)}
+        {
+          LINKS.length > 0 && (
+            <ul class="links">
+              {LINKS.map((link) => (
+                <li>
+                  <a class="arrow-link" href={link.href}>
+                    {link.label} <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    projects.length > 0 && (
+      <section class="section wrap" aria-labelledby="work-heading">
+        <div class="section-head">
+          <h2 id="work-heading">Selected work</h2>
+          <a class="count" href="/projects/">
+            All projects ({String(totalProjects).padStart(2, '0')}) →
+          </a>
+        </div>
+        <ProjectTiles projects={projects} />
+      </section>
+    )
+  }
+
+  {
+    posts.length > 0 && (
+      <section class="section wrap" aria-labelledby="misc-heading">
+        <div class="section-head">
+          <h2 id="misc-heading">Misc &amp; notes</h2>
+          <a class="count" href="/misc/">
+            View all →
+          </a>
+        </div>
+        <PostRows posts={posts} />
+      </section>
+    )
+  }
+</Layout>
+
+<style>
+  .hero {
+    padding-top: clamp(2.5rem, 9vw, 7rem);
+  }
+
+  h1 {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    font-size: clamp(4rem, 17vw, 13.5rem);
+    font-weight: 800;
+    line-height: 0.86;
+    letter-spacing: -0.035em;
+  }
+
+  .dot {
+    color: var(--accent);
+  }
+
+  .about {
+    margin-top: clamp(2.5rem, 6vw, 4.5rem);
+    padding-top: 1rem;
+    border-top: 2px solid var(--fg);
+    row-gap: 1rem;
+  }
+
+  .greeting {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+
+  .lede {
+    margin: 0 0 1rem;
+    font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .links a {
+    color: var(--accent);
+  }
+
+  .count {
+    text-decoration: none;
+  }
+
+  .count:hover {
+    color: var(--accent);
+  }
+</style>

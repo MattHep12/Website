@@ -1,0 +1,24 @@
+---
+import Layout from './Layout.astro';
+import ProjectTiles from './ProjectTiles.astro';
+import type { Project } from '../../lib/content';
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<Layout title="Projects" description="Things Matt Hepburn has built: tools, experiments and side projects.">
+  <div class="wrap">
+    <header class="page-head">
+      <h1>Projects<sup>({String(projects.length).padStart(2, '0')})</sup></h1>
+      <p class="lede">
+        Tools, experiments and side projects, newest first. Some are finished; most are still
+        evolving.
+      </p>
+    </header>
+    {projects.length > 0 ? <ProjectTiles projects={projects} headingLevel={2} /> : <p>Nothing here yet.</p>}
+  </div>
+</Layout>

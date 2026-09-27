@@ -1,0 +1,53 @@
+---
+// Embeds a self-contained demo from /public/demos/<name>/ in an iframe.
+// The iframe only loads when scrolled into view, so pages stay light.
+interface Props {
+  src: string;
+  title: string;
+  height?: number;
+}
+const { src, title, height = 520 } = Astro.props;
+---
+
+<figure class="demo-embed">
+  <iframe
+    src={src}
+    title={`Live demo: ${title}`}
+    loading="lazy"
+    style={`height: ${height}px`}
+    allow="fullscreen"></iframe>
+  <figcaption>
+    <span>Live demo</span>
+    <a href={src}>Open full screen <span aria-hidden="true">↗</span></a>
+  </figcaption>
+</figure>
+
+<style>
+  .demo-embed {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius, 0);
+    overflow: hidden;
+    background: var(--surface);
+  }
+  iframe {
+    display: block;
+    width: 100%;
+    max-height: 80vh;
+    border: 0;
+    background: var(--surface);
+  }
+  figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.9rem;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  figcaption a {
+    color: var(--accent);
+  }
+</style>

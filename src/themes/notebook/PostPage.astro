@@ -1,0 +1,72 @@
+---
+import { render } from 'astro:content';
+import Layout from './Layout.astro';
+import { formatDate, type Post } from '../../lib/content';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { title, description, date, updated, tags } = post.data;
+const { Content } = await render(post);
+---
+
+<Layout title={title} description={description} type="article" publishedTime={date}>
+  <article class="wrap">
+    <header class="head">
+      <a class="back label" href="/misc/">← Misc</a>
+      <h1>{title}</h1>
+      <p class="label dates">
+        <time datetime={date.toISOString()}>{formatDate(date)}</time>
+        {
+          updated && (
+            <>
+              {' · updated '}
+              <time datetime={updated.toISOString()}>{formatDate(updated)}</time>
+            </>
+          )
+        }
+      </p>
+      {
+        tags.length > 0 && (
+          <ul class="tags" aria-label="Tags">
+            {tags.map((tag) => (
+              <li>{tag}</li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .head {
+    max-width: var(--measure);
+    padding-block: 1rem 2.5rem;
+  }
+
+  .back {
+    text-decoration: none;
+  }
+
+  .back:hover {
+    color: var(--accent);
+  }
+
+  h1 {
+    margin: 1.25rem 0 0.75rem;
+    font-size: clamp(2.25rem, 6vw, 3.4rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  .dates {
+    margin: 0 0 0.6rem;
+  }
+</style>

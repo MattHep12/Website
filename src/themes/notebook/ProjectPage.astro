@@ -1,0 +1,158 @@
+---
+import { Picture } from 'astro:assets';
+import { render } from 'astro:content';
+import Layout from './Layout.astro';
+import DemoEmbed from '../../components/DemoEmbed.astro';
+import { isExternal, type Project } from '../../lib/content';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const { title, description, tags, cover, coverAlt, github, demo, embed, embedHeight, date } =
+  project.data;
+const { Content } = await render(project);
+
+const links = [
+  demo && { label: 'Live demo', href: demo },
+  github && { label: 'Source on GitHub', href: github },
+].filter(Boolean) as { label: string; href: string }[];
+---
+
+<Layout title={title} description={description} image={cover} imageAlt={coverAlt} type="article">
+  <article class="wrap">
+    <header class="head">
+      <a class="back label" href="/projects/">← Projects</a>
+      <h1>{title}</h1>
+      <p class="lede measure">{description}</p>
+
+      <dl class="meta">
+        <div>
+          <dt class="label">Year</dt>
+          <dd><time datetime={date.toISOString()}>{date.getUTCFullYear()}</time></dd>
+        </div>
+        {
+          tags.length > 0 && (
+            <div>
+              <dt class="label">Built with</dt>
+              <dd>{tags.join(', ')}</dd>
+            </div>
+          )
+        }
+        {
+          links.length > 0 && (
+            <div>
+              <dt class="label">Links</dt>
+              <dd>
+                <ul class="links">
+                  {links.map((link) => (
+                    <li>
+                      <a href={link.href}>
+                        {link.label}
+                        <span aria-hidden="true">{isExternal(link.href) ? ' ↗' : ' →'}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+    </header>
+
+    {
+      embed && demo ? (
+        <div class="media">
+          <DemoEmbed src={demo} title={title} height={embedHeight} />
+        </div>
+      ) : (
+        cover && (
+          <figure class="media cover">
+            <Picture
+              src={cover}
+              alt={coverAlt ?? ''}
+              widths={[640, 960, 1280, 1792]}
+              sizes="(min-width: 60rem) 56rem, calc(100vw - 2.5rem)"
+              formats={['avif', 'webp']}
+              loading="eager"
+              fetchpriority="high"
+            />
+          </figure>
+        )
+      )
+    }
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .head {
+    padding-block: 1rem 2.5rem;
+  }
+
+  .back {
+    text-decoration: none;
+  }
+
+  .back:hover {
+    color: var(--accent);
+  }
+
+  h1 {
+    margin: 1.25rem 0 0.75rem;
+    font-size: clamp(2.5rem, 7vw, 4rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+
+  .lede {
+    margin: 0;
+    font-size: clamp(1.2rem, 2.4vw, 1.4rem);
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 3rem;
+    margin: 2rem 0 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .meta dd {
+    margin: 0.2rem 0 0;
+    font-size: 1.05rem;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .links a {
+    color: var(--accent);
+  }
+
+  .media {
+    margin: 0 0 3rem;
+  }
+
+  .cover :global(img) {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+</style>

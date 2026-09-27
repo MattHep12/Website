@@ -1,0 +1,27 @@
+---
+import Layout from './Layout.astro';
+---
+
+<Layout title="Page not found" description="This page doesn't exist." noindex>
+  <div class="wrap">
+    <header class="page-head">
+      <h1>404<span class="dot">.</span></h1>
+      <p class="lede">
+        This page doesn’t exist. It may have moved, or the link may be old. Try the
+        <a href="/">home page</a>, <a href="/projects/">projects</a> or <a href="/misc/">misc</a>.
+      </p>
+    </header>
+  </div>
+</Layout>
+
+<style>
+  .dot {
+    color: var(--accent);
+  }
+
+  .lede a {
+    color: var(--fg);
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+  }
+</style>

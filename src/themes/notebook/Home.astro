@@ -1,0 +1,105 @@
+---
+import Layout from './Layout.astro';
+import ProjectItem from './ProjectItem.astro';
+import PostList from './PostList.astro';
+import { INTRO, LINKS } from '../../site';
+import type { Post, Project } from '../../lib/content';
+
+interface Props {
+  projects: Project[];
+  posts: Post[];
+  totalProjects: number;
+}
+
+const { projects, posts, totalProjects } = Astro.props;
+---
+
+<Layout>
+  <section class="intro wrap" aria-labelledby="intro-heading">
+    <h1 id="intro-heading">{INTRO.greeting}</h1>
+    {INTRO.paragraphs.map((p) => <p class="lede">{p}</p>)}
+    {
+      LINKS.length > 0 && (
+        <ul class="intro-links">
+          {LINKS.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+
+  {
+    projects.length > 0 && (
+      <section class="wrap block" aria-labelledby="projects-heading">
+        <div class="section-head">
+          <h2 id="projects-heading">Selected projects</h2>
+        </div>
+        {projects.map((project) => (
+          <ProjectItem project={project} />
+        ))}
+        {totalProjects > projects.length && (
+          <a class="more-link" href="/projects/">
+            All {totalProjects} projects →
+          </a>
+        )}
+      </section>
+    )
+  }
+
+  {
+    posts.length > 0 && (
+      <section class="wrap block" aria-labelledby="notes-heading">
+        <div class="section-head">
+          <h2 id="notes-heading">Notes &amp; misc</h2>
+        </div>
+        <PostList posts={posts} />
+        <a class="more-link" href="/misc/">
+          Everything in misc →
+        </a>
+      </section>
+    )
+  }
+</Layout>
+
+<style>
+  .intro {
+    padding-block: clamp(2rem, 8vw, 5rem) clamp(2rem, 6vw, 4rem);
+  }
+
+  h1 {
+    margin: 0 0 1.5rem;
+    font-size: clamp(2.75rem, 8vw, 4.75rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+  }
+
+  .lede {
+    max-width: 36rem;
+    margin: 0 0 1rem;
+    font-size: clamp(1.2rem, 2.4vw, 1.4rem);
+    line-height: 1.5;
+  }
+
+  .intro-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+
+  .intro-links a {
+    color: var(--accent);
+  }
+
+  .block {
+    margin-top: 3.5rem;
+  }
+</style>

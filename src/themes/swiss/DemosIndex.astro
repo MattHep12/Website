@@ -1,0 +1,33 @@
+---
+import Layout from './Layout.astro';
+import ProjectTiles from './ProjectTiles.astro';
+import type { Project } from '../../lib/content';
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<Layout title="Demos" description="Small interactive things you can play with in the browser.">
+  <div class="wrap">
+    <header class="page-head">
+      <h1>Demos<sup>({String(projects.length).padStart(2, '0')})</sup></h1>
+      <p class="lede">Small interactive things that run right in your browser.</p>
+    </header>
+    {
+      projects.length > 0 ? (
+        <ProjectTiles projects={projects} headingLevel={2} />
+      ) : (
+        <p class="empty">No demos yet. Check back soon.</p>
+      )
+    }
+  </div>
+</Layout>
+
+<style>
+  .empty {
+    color: var(--muted);
+  }
+</style>

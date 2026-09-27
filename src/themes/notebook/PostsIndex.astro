@@ -1,0 +1,23 @@
+---
+import Layout from './Layout.astro';
+import PostList from './PostList.astro';
+import type { Post } from '../../lib/content';
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+<Layout title="Misc" description="Notes, write-ups and miscellaneous posts by Matt Hepburn.">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="label">Index</p>
+      <h1>Misc</h1>
+      <p class="lede measure">Notes, half-formed ideas and things I wanted to write down.</p>
+    </header>
+    {posts.length > 0 ? <PostList posts={posts} headingLevel={2} /> : <p>Nothing here yet.</p>}
+  </div>
+</Layout>
+
