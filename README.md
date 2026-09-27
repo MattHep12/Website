@@ -6,6 +6,7 @@ The personal site of Matt Hepburn: projects, small browser demos and miscellaneo
   JavaScript ships unless a demo needs it.
 - **Content is Markdown.** One `.md` file per project or post, with no code changes.
 - **Hosted on Cloudflare Workers** (static assets), deployed automatically from GitHub.
+- **Two designs, switchable by visitors** (Notebook and Swiss) with a switch in the header.
 - Light/dark mode follows the visitor's system setting. There's no tracking or analytics, and fonts are
   self-hosted, so visitors' browsers never contact a third party.
 
@@ -14,7 +15,7 @@ The personal site of Matt Hepburn: projects, small browser demos and miscellaneo
 ## Contents
 
 1. [Run it locally](#run-it-locally)
-2. [Pick a theme](#pick-a-theme)
+2. [Themes and the design switch](#themes-and-the-design-switch)
 3. [Project layout](#project-layout)
 4. [Add a project](#add-a-project)
 5. [Add a post](#add-a-post)
@@ -38,11 +39,10 @@ Other commands:
 | Command                 | What it does                                               |
 | ----------------------- | ---------------------------------------------------------- |
 | `npm run dev`           | Dev server with the default theme                          |
-| `npm run dev:notebook`  | Dev server with theme A (Lab Notebook)                     |
-| `npm run dev:swiss`     | Dev server with theme C (Swiss Grid)                       |
-| `npm run build`         | Production build into `dist/`                              |
-| `npm run build:swiss`   | Production build with the Swiss theme                      |
-| `npm run preview`       | Serve the built `dist/` folder locally                     |
+| `npm run dev:notebook`  | Dev server with the Notebook theme                         |
+| `npm run dev:swiss`     | Dev server with the Swiss theme                            |
+| `npm run build`         | Production build of every theme into `dist/`               |
+| `npm run preview`       | Build, then serve it exactly like Cloudflare does (with the design switch) at http://localhost:8787 |
 | `npm run check`         | Type-check the project and validate content                |
 | `npm run deploy`        | Build and deploy from your machine with Wrangler (optional) |
 
@@ -50,31 +50,43 @@ Drafts (`draft: true`) show up in `npm run dev` but are left out of production b
 
 ---
 
-## Pick a theme
+## Themes and the design switch
 
-Two visual directions are built on the same content, so you can compare them:
+The site has two designs built on the same content:
 
-- **A · Lab Notebook** (`src/themes/notebook/`): warm paper tones, serif type (Newsreader),
-  monospace margin notes (JetBrains Mono), a terracotta accent, and an editorial project list.
-- **C · Swiss Grid** (`src/themes/swiss/`): big grotesk type (Inter Tight / Inter), a strict
-  12-column grid, a cobalt accent, and large numbered project tiles.
+- **Notebook** (`src/themes/notebook/`): warm paper tones, serif type (Newsreader), monospace
+  margin notes (JetBrains Mono), a terracotta accent, and an editorial project list.
+- **Swiss** (`src/themes/swiss/`): big grotesk type (Inter Tight / Inter), a strict 12-column
+  grid, a cobalt accent, and large numbered project tiles.
 
-The theme is chosen at build time with the `SITE_THEME` environment variable (`notebook` by default).
-Run `npm run dev:notebook` and `npm run dev:swiss` side by side (the second starts on port 4322) to compare them.
+Visitors pick one with the **Design** switch in the header, and the choice sticks as they browse.
+New visitors and search engines get the default, set in **`src/themes.config.mjs`** (`DEFAULT_THEME`),
+which is also where the list of themes lives.
 
-**Once you've decided**, make the choice permanent:
+**How it works:**
 
-1. Delete the folder of the theme you don't want from `src/themes/`.
-2. In `astro.config.mjs`, set the fallback on the `const theme = ...` line to your theme and trim
-   `THEMES` to it.
-3. In `tsconfig.json`, point the `@theme/*` path at your theme's folder (this only helps editor
-   autocompletion).
-4. Optionally remove the `dev:*` / `build:*` theme scripts from `package.json`.
-5. `public/favicon.svg` and `public/og-default.png` use the notebook colours. Tweak them if you
-   pick Swiss.
+1. `npm run build` (`scripts/build.mjs`) builds the site once per theme: the default at the root
+   of `dist/`, the others in `dist/_themes/<id>/`.
+2. The switch is a plain link to `/theme/<id>/?next=<this page>`. The small Worker in
+   `worker/index.ts` answers it by setting a `theme` cookie and sending you back to the same page.
+   There's no JavaScript involved.
+3. For every page request, the Worker checks the cookie and serves that theme's copy of the page at
+   the same URL. CSS, fonts and images are shared and skip the Worker entirely.
 
-How it works: every route in `src/pages/` loads content and hands it to a component imported from
-`@theme/…`, an alias that points at the active theme folder. Each theme provides the same set of
+The cookie only remembers the design choice. It isn't used for tracking. Page requests now run the
+Worker, which counts toward the Workers free plan (100,000 requests a day), far more than a personal
+site needs.
+
+**Local development:** `npm run dev` runs one theme at a time, and in dev the switch just reloads
+the page. Use `npm run dev:notebook` / `npm run dev:swiss` to work on a theme, and
+`npm run preview` to try the real switch.
+
+**Removing the switch later:** set `DEFAULT_THEME` to the design you want, remove the other entry
+from `THEMES`, delete its folder from `src/themes/`, and remove `<ThemeSwitch … />` from the
+remaining theme's `Layout.astro`.
+
+How the themes plug in: every route in `src/pages/` loads content and hands it to a component
+imported from `@theme/…`, an alias for the theme being built. Each theme provides the same set of
 components (`Layout`, `Home`, `ProjectsIndex`, `ProjectPage`, `PostsIndex`, `PostPage`,
 `DemosIndex`, `NotFound`).
 
@@ -85,20 +97,23 @@ components (`Layout`, `Home`, `ProjectsIndex`, `ProjectPage`, `PostsIndex`, `Pos
 ```
 src/
   site.ts                  ← your name, intro text, links, default SEO description
+  themes.config.mjs        ← the list of themes and which one is the default
   content.config.ts        ← the frontmatter schema for projects and posts
   content/
     projects/*.md          ← one file per project (+ its screenshot next to it)
     posts/*.md             ← one file per misc post
   pages/                   ← routes (/, /projects/, /projects/<slug>/, /misc/, /demos/, 404)
-  themes/notebook/         ← theme A
-  themes/swiss/            ← theme C
-  components/              ← shared bits: SEO tags, demo embed
+  themes/notebook/         ← the Notebook design
+  themes/swiss/            ← the Swiss design
+  components/              ← shared bits: SEO tags, demo embed, design switch
   lib/content.ts           ← helpers for sorting, drafts and links
   styles/base.css          ← shared reset + accessibility helpers
 public/
   demos/<name>/            ← self-contained interactive demos, served at /demos/<name>/
   _headers                 ← HTTP headers (security + long caching for hashed assets)
   favicon.svg, og-default.png, robots.txt
+worker/index.ts            ← serves each visitor's chosen design
+scripts/build.mjs          ← builds every theme into dist/
 wrangler.jsonc             ← Cloudflare Workers config
 ```
 
@@ -269,9 +284,9 @@ would clash.
 ## Deploy to Cloudflare and connect matthepburn.com
 
 The site deploys as a **Cloudflare Worker with static assets**. For new projects, Cloudflare now
-recommends Workers over Pages, and a purely static site like this one is served straight from Cloudflare's
-edge with no Worker code running (static asset requests are free and unmetered). The config is in
-`wrangler.jsonc`.
+recommends Workers over Pages. Files are served straight from Cloudflare's edge; a small Worker
+(`worker/index.ts`) runs only for page requests, to apply the visitor's chosen design. The config is
+in `wrangler.jsonc`.
 
 > Cloudflare's dashboard labels change from time to time. If a button below is named slightly
 > differently, the linked docs have the current wording.
@@ -293,16 +308,14 @@ merge the working branch into `main` first (open a pull request on GitHub and me
    - **Build command:** `npm run build`
    - **Deploy command:** `npx wrangler deploy` (the default)
    - **Root directory:** `/` (default)
-4. Under **Advanced settings → Build variables**, add:
-   - `SITE_THEME` = `notebook` or `swiss` (whichever you picked; optional if it's `notebook`)
-   - `NODE_VERSION` = `22`. The `.nvmrc` file already asks for Node 22, so this is a belt-and-braces
-     setting.
+4. Optionally, under **Advanced settings → Build variables**, add `NODE_VERSION` = `22`. The
+   `.nvmrc` file already asks for Node 22, so this is just belt-and-braces. (No theme variable is
+   needed: every build includes both designs, and the default is set in `src/themes.config.mjs`.)
 5. **Deploy.** When the build finishes, the site is live at
    `https://matthepburn.<your-subdomain>.workers.dev`. Check it there.
 
 From now on **every push to `main` redeploys automatically**. Pushes to other branches can build
-preview versions (Worker → **Settings → Build → Branch control**), which is a handy way to compare
-the two themes live: set `SITE_THEME=swiss` on a preview branch.
+preview versions (Worker → **Settings → Build → Branch control**).
 
 Docs: [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/) ·
 [Static assets](https://developers.cloudflare.com/workers/static-assets/) ·
@@ -353,8 +366,7 @@ Docs: [Redirect www to root](https://developers.cloudflare.com/rules/url-forward
 
 ```sh
 npx wrangler login
-npm run deploy                          # builds, then uploads dist/
-# or: npx cross-env SITE_THEME=swiss npm run deploy
+npm run deploy                          # builds every theme, then uploads dist/ and the Worker
 ```
 
 ---
@@ -364,7 +376,8 @@ npm run deploy                          # builds, then uploads dist/
 - **SEO:** each page gets a title, meta description, canonical URL, Open Graph and Twitter card
   tags. Project pages use their screenshot as the social image, and everything else uses
   `public/og-default.png`. `robots.txt` points at the generated sitemap.
-- **Performance:** zero client-side JavaScript on site pages, and fonts are self-hosted and subset.
+- **Performance:** zero client-side JavaScript on site pages (the design switch is a plain link),
+  and fonts are self-hosted and subset.
   Images are resized at build time and served as AVIF/WebP with `srcset`. Hashed assets under `/_astro/`
   are cached for a year (`public/_headers`).
 - **Accessibility:** semantic landmarks, a skip link, visible focus styles, alt text enforced by the

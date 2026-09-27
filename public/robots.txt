@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+# Theme-switch links only set a cookie.
+Disallow: /theme/
 
 Sitemap: https://matthepburn.com/sitemap-index.xml

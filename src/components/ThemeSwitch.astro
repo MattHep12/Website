@@ -1,0 +1,32 @@
+---
+// Links that switch the site's design. Each one sets a cookie via
+// /theme/<id>/ (handled by worker/index.ts) and returns to this page.
+// Plain links, so it works without JavaScript.
+import { THEMES } from '../themes.config.mjs';
+
+interface Props {
+  /** The theme rendering this page. */
+  current: string;
+}
+
+const { current } = Astro.props;
+const here = encodeURIComponent(Astro.url.pathname);
+---
+
+<div class="theme-switch" role="group" aria-label="Site design">
+  <span class="theme-switch-label" aria-hidden="true">Design</span>
+  {
+    THEMES.map(({ id, label }) =>
+      id === current ? (
+        <span class="theme-switch-option" aria-current="true">
+          {label}
+        </span>
+      ) : (
+        <a class="theme-switch-option" href={`/theme/${id}/?next=${here}`} rel="nofollow">
+          {label}
+          <span class="sr-only"> design</span>
+        </a>
+      ),
+    )
+  }
+</div>
